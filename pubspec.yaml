@@ -1,0 +1,40 @@
+name: safe_ride
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_maps_flutter: ^2.5.0
+  flutter_svg: ^2.0.9
+  cupertino_icons: ^1.0.8
+
+
+  percent_indicator: ^4.2.4
+  url_launcher: ^6.3.1
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  assets:
+    - assets/images/logo.png
+    - assets/images/battery.png
+    - assets/images/speed.png
+    - assets/images/heart.png
+    - assets/images/distance.png
+    - assets/images/goal.png
+    - assets/images/info.png
+    - assets/images/alcohol.png
+    - assets/images/health_logo.png
+    - assets/images/heart_rate.png
+    - assets/images/lung.png
+    - assets/images/water.png
+    - assets/images/1st_aid.png
