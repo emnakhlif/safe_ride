@@ -7,6 +7,9 @@ environment:
   sdk: ^3.7.0
 
 dependencies:
+  firebase_core: ^1.10.0
+  firebase_auth: ^3.3.4
+  firebase_database: ^9.0.0
   flutter:
     sdk: flutter
   google_maps_flutter: ^2.5.0
