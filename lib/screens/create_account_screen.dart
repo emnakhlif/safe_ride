@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'personal_informations_screen.dart';
+import 'personal_informations_screen.dart'; // Navigate to Personal Information screen after account creation
 
 class CreateAccountScreen extends StatefulWidget {
   @override
@@ -12,7 +11,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  // Firebase Authentication
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> _createAccount() async {
@@ -23,7 +21,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         password: _passwordController.text,
       );
 
-      // Navigate to Personal Informations Screen after creating the account
+      // Navigate to PersonalInformationsScreen after creating the account
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => PersonalInformationsScreen(user: userCredential.user!)),
@@ -56,7 +54,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             const SizedBox(height: 24.0),
             ElevatedButton(
               onPressed: _createAccount,
-              child: const Text('Create an Account'),
+              child: const Text('Create Account'),
             ),
           ],
         ),
