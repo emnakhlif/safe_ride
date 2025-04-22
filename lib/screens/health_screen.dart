@@ -1,6 +1,11 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class HealthScreen extends StatelessWidget {
+  // Firebase references for real-time data
+  final DatabaseReference _alcoholRef = FirebaseDatabase.instance.ref('sensor_data/alcohol');
+  final DatabaseReference _heartRateRef = FirebaseDatabase.instance.ref('sensor_data/max30100');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,19 +34,23 @@ class HealthScreen extends StatelessWidget {
               'very good',
             ),
             SizedBox(height: 20), // Increased spacing
-            _buildHealthItem(
+
+            // Heart rate section that listens for real-time data
+            _buildHealthItemWithStream(
               'assets/images/heart_rate.png',
               'Your heart rate',
-              '80%',
-              '',
+              _heartRateRef,
             ),
+
             SizedBox(height: 20), // Increased spacing
-            _buildHealthItem(
+
+            // Alcohol level section that listens for real-time data
+            _buildHealthItemWithStream(
               'assets/images/alcohol.png',
-              'Your alcohol level is very low',
-              'You can ride',
-              '',
+              'Your alcohol level',
+              _alcoholRef,
             ),
+
             SizedBox(height: 40), // Increased spacing
             Text(
               'Reminder:',
@@ -62,6 +71,52 @@ class HealthScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  // Function to build health metrics items with StreamBuilder for real-time data
+  Widget _buildHealthItemWithStream(String imagePath, String title, DatabaseReference ref) {
+    return StreamBuilder<DatabaseEvent>(
+      stream: ref.onValue, // Listen for real-time updates
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
+          return Text('No data available');
+        }
+
+        final data = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+        final timestamp = data.keys.first; // Get the first timestamp key
+        final value = data[timestamp]; // Get the value (could be heart rate or alcohol level)
+
+        return Row(
+          children: [
+            Image.asset(imagePath, width: 40, height: 40),
+            SizedBox(width: 20), // Increased spacing
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Text(
+                    '$value',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
