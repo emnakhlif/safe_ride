@@ -22,20 +22,56 @@ class MyApp extends StatelessWidget {
         primaryColor: const Color(0xFF2D4356),
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: _getInitialScreen(),
+      home: const _SplashScreen(), // Add a SplashScreen to handle async loading
     );
-  }
-
-  // Function to check if the user is logged in and return the appropriate screen
-  Widget _getInitialScreen() {
-    // Get the current user from Firebase Authentication
-    User? user = FirebaseAuth.instance.currentUser;
-    
-    if (user != null) {
-      return const HomeScreen(); // If the user is logged in, show the HomeScreen
-    } else {
-      return const CreateAccountScreen(); // Otherwise, show the CreateAccountScreen
-    }
   }
 }
 
+// SplashScreen to check for Firebase authentication state before showing HomeScreen or CreateAccountScreen
+class _SplashScreen extends StatefulWidget {
+  const _SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<_SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  // Check if the user is logged in
+  Future<void> _checkLoginStatus() async {
+    // Check Firebase Auth user state asynchronously
+    User? user = FirebaseAuth.instance.currentUser;
+
+    await Future.delayed(const Duration(seconds: 2)); // Optional: Add some delay for splash effect
+
+    // Navigate to the appropriate screen based on login status
+    if (user != null) {
+      // If the user is logged in, navigate to the HomeScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      // If the user is not logged in, navigate to CreateAccountScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const CreateAccountScreen()),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Show a splash screen while the authentication state is checked
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(), // Show loading indicator during Firebase initialization
+      ),
+    );
+  }
+}
