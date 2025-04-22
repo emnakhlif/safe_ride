@@ -1,12 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'home_screen.dart'; // Navigate to HomeScreen after data is saved
+import 'home_screen.dart'; // After saving data, navigate to HomeScreen
 
 class PersonalInformationsScreen extends StatefulWidget {
-  final User user;
+  final User user;  // Pass user object from Firebase Authentication
 
-  // Constructor to pass the user object to this screen
   PersonalInformationsScreen({required this.user});
 
   @override
@@ -16,24 +15,20 @@ class PersonalInformationsScreen extends StatefulWidget {
 
 class _PersonalInformationsScreenState
     extends State<PersonalInformationsScreen> {
-  // Firebase reference for storing user data
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref('users');
 
-  // Controllers for user input fields
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _ageController = TextEditingController();
   final _emergencyController = TextEditingController();
   final _healthController = TextEditingController();
 
-  String _selectedBloodType = 'A+'; // Default blood type
+  String _selectedBloodType = 'A+';
   final _formKey = GlobalKey<FormState>();
 
-  // Save user data to Firebase
   Future<void> _saveUserData() async {
     if (_formKey.currentState!.validate()) {
       try {
-        // Save user data to Firebase Realtime Database
         await _dbRef.child(widget.user.uid).set({
           'name': _nameController.text,
           'phone_number': _phoneController.text,
@@ -43,7 +38,6 @@ class _PersonalInformationsScreenState
           'emergency_number': _emergencyController.text,
         });
 
-        // Navigate to the HomeScreen after saving the data
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -92,7 +86,6 @@ class _PersonalInformationsScreenState
     );
   }
 
-  // TextFormField widget for user input fields
   Widget _buildInputField(String label, TextEditingController controller, {int maxLines = 1}) {
     return TextFormField(
       controller: controller,
@@ -112,7 +105,6 @@ class _PersonalInformationsScreenState
     );
   }
 
-  // Dropdown for blood type selection
   Widget _buildDropdownField(String label, List<String> items) {
     return StatefulBuilder(
       builder: (context, setState) {
