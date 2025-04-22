@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'goals_screen.dart';
 import 'health_screen.dart';
@@ -9,6 +10,10 @@ import 'login_screen.dart'; // Replace with your actual login page file
 import 'info_screen.dart'; // Replace with your actual info page file
 
 class HomeScreen extends StatelessWidget {
+  // Firebase references for real-time data
+  final DatabaseReference _alcoholRef = FirebaseDatabase.instance.ref('sensor_data/alcohol');
+  final DatabaseReference _heartRateRef = FirebaseDatabase.instance.ref('sensor_data/max30100');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,13 +115,29 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildHealthMetrics(BuildContext context) {
-    return ListTile(
-      title: Text('Heart Rate & Health Metrics'),
-      subtitle: Text('Tap to view detailed health stats'),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => HealthScreen()),
+    return StreamBuilder<DatabaseEvent>(
+      stream: _heartRateRef.onValue, // Listen for heart rate changes
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
+          return Text('No data available');
+        }
+
+        final data = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+        final timestamp = data.keys.first; // Get the first timestamp key
+        final ir = data[timestamp]['ir'];
+        final red = data[timestamp]['red'];
+
+        return ListTile(
+          title: Text('Heart Rate: $ir'),
+          subtitle: Text('Red: $red\nTimestamp: $timestamp'),
         );
       },
     );
@@ -150,7 +171,4 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
-
-
 
